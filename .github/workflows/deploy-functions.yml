@@ -1,0 +1,38 @@
+name: Deploy ASP.NET Azure Functions (Simple Publish Profile)
+
+on:
+  push:
+    branches: [ master ]
+    paths: [ 'MyFunctionsApp/**' ]   # Only trigger when Functions code changes
+  workflow_dispatch:                 # Allow manual runs from GitHub UI
+
+env:
+  AZURE_FUNCTIONAPP_NAME: 'myFuncApp'     # <-- Change this
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'               # Root of repo or subfolder
+  DOTNET_VERSION: '8.0.x'                           # Match your project
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest          # Most compatible for .NET Functions
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Build & Publish Functions
+        shell: pwsh
+        run: |
+          pushd '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          dotnet publish -c Release -o ./publish
+          popd
+
+      - name: Deploy to Azure Functions
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/publish'
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
