@@ -28,15 +28,19 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      # Private Feed Auth (works with NuGet.config)
-      - name: Authenticate to Azure DevOps NuGet feed
+      # === Private Feed Authentication (Critical Fix) ===
+      - name: Authenticate Azure DevOps NuGet Feed
+        shell: pwsh
         run: |
-          dotnet nuget add source "https://pkgs.dev.azure.com/krugb/beverages/_packaging/CoffeegCommon/nuget/v3/index.json" \
-            --name "AzureDevOpsFeed" \
-            --username ANYTHING \
-            --password ${{ secrets.AZURE_DEVOPS_PAT }} \
+          dotnet nuget remove source AzureDevOpsFeed --configfile ${{ env.PROJECT_PATH }}/NuGet.config --ignore-errors
+          dotnet nuget add source "https://pkgs.dev.azure.com/YOUR_ORG/YOUR_PROJECT/_packaging/YOUR_FEED/nuget/v3/index.json" `
+            --name "AzureDevOpsFeed" `
+            --username "ANYTHING" `
+            --password ${{ secrets.AZURE_DEVOPS_PAT }} `
+            --configfile ${{ env.PROJECT_PATH }}/NuGet.config `
             --store-password-in-clear-text
 
+      # === Restore + Publish (Correct for Functions) ===
       - name: Restore, Build & Publish
         shell: pwsh
         run: |
