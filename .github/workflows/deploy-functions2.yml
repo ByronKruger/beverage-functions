@@ -33,7 +33,7 @@ jobs:
         working-directory: ${{ env.PROJECT_PATH }}
         run: |
           dotnet nuget remove source AzureDevOpsFeed --configfile NuGet.config 2>$null || echo "Source not present - continuing"
-          dotnet nuget add source "https://pkgs.dev.azure.com/YOUR_ORG/YOUR_PROJECT/_packaging/YOUR_FEED/nuget/v3/index.json" `
+          dotnet nuget add source "https://pkgs.dev.azure.com/krugb/beverages/_packaging/CoffeegCommon/nuget/v3/index.json" `
             --name "AzureDevOpsFeed" `
             --username "ANYTHING" `
             --password ${{ secrets.AZURE_DEVOPS_PAT }} `
