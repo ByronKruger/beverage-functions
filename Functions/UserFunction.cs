@@ -23,7 +23,7 @@ namespace TestFunctionApp.Functions
         //    return new OkObjectResult("Welcome to Azure Functions!123");
         //}
 
-        [Function("Register")]
+        [Function("Register1")]
         public async Task<IActionResult> Register(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "api/user/register")]
             HttpRequest req)//,
