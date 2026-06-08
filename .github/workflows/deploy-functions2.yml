@@ -28,23 +28,22 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      # === Private Feed Authentication (Critical Fix) ===
       - name: Authenticate Azure DevOps NuGet Feed
         shell: pwsh
+        working-directory: ${{ env.PROJECT_PATH }}
         run: |
-          dotnet nuget remove source AzureDevOpsFeed --configfile ${{ env.PROJECT_PATH }}/NuGet.config
+          dotnet nuget remove source AzureDevOpsFeed --configfile NuGet.config 2>$null || echo "Source not present - continuing"
           dotnet nuget add source "https://pkgs.dev.azure.com/YOUR_ORG/YOUR_PROJECT/_packaging/YOUR_FEED/nuget/v3/index.json" `
             --name "AzureDevOpsFeed" `
             --username "ANYTHING" `
             --password ${{ secrets.AZURE_DEVOPS_PAT }} `
-            --configfile ${{ env.PROJECT_PATH }}/NuGet.config `
+            --configfile NuGet.config `
             --store-password-in-clear-text
 
-      # === Restore + Publish (Correct for Functions) ===
       - name: Restore, Build & Publish
         shell: pwsh
+        working-directory: ${{ env.PROJECT_PATH }}
         run: |
-          cd '${{ env.PROJECT_PATH }}'
           dotnet restore --verbosity detailed
           dotnet publish -c Release -o '${{ github.workspace }}/${{ env.PUBLISH_OUTPUT }}' --verbosity detailed
 
