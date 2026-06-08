@@ -3,13 +3,15 @@ name: Deploy ASP.NET Azure Functions (Simple Publish Profile)
 on:
   push:
     branches: [ master ]
-    paths: [ 'MyFunctionsApp/**' ]   # Only trigger when Functions code changes
+    paths: [ 'TestFunctionApp/**' ]   # Only trigger when Functions code changes
   workflow_dispatch:                 # Allow manual runs from GitHub UI
 
 env:
   AZURE_FUNCTIONAPP_NAME: 'myFuncApp'     # <-- Change this
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'               # Root of repo or subfolder
   DOTNET_VERSION: '8.0.x'                           # Match your project
+  PROJECT_PATH: 'TestFunctionApp'     # <-- ADD THIS: your Functions project folder
+  PUBLISH_OUTPUT: './publish'        # Consistent output dir
 
 jobs:
   build-and-deploy:

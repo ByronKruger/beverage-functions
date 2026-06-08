@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace TestFunctionApp
+namespace TestFunctionApp.Functions
 {
     public class UserFunction(IUserManagementService Service)
     {
