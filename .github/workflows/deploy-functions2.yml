@@ -63,14 +63,17 @@ jobs:
             Remove-Item -Recurse -Force ${{ env.PUBLISH_DIR }}
           }
 
-      - name: Build & Publish Functions (Release)
+      - name: Build & Publish Functions
         shell: pwsh
         run: |
           dotnet publish ${{ env.FUNCTIONS_PROJECT }} `
             -c Release `
             -o ${{ env.PUBLISH_DIR }} `
             --no-restore `
-            -p:PublishReadyToRun=true   # Optional perf win for cold starts (Isolated model)
+            -p:PublishReadyToRun=true `
+            -p:PublishReadyToRunComposite=true `   # Helps with cross-platform
+            -r linux-x64 `                         # Critical: Azure Functions runtime
+            --self-contained false                 # Framework-dependent (smaller, correct for Functions)
 
       # === Deploy (zip deploy via publish profile - convenient & works well) ===
       - name: Deploy to Azure Functions
