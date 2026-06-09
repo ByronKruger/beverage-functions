@@ -73,7 +73,7 @@ jobs:
             -p:PublishReadyToRun=true `
             -p:PublishReadyToRunComposite=true `   # Helps with cross-platform
             -r linux-x64 `                         # Critical: Azure Functions runtime
-            --self-contained false                 # Framework-dependent (smaller, correct for Functions)
+            --self-contained false `               # Framework-dependent (smaller, correct for Functions)
 
       # === Deploy (zip deploy via publish profile - convenient & works well) ===
       - name: Deploy to Azure Functions
