@@ -24,6 +24,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug - List directory structure
+        shell: pwsh
+        run: |
+          Write-Host "Current working directory:"
+          Get-Location | Format-List
+          Write-Host "`nDirectory listing (root):"
+          Get-ChildItem -Recurse -Depth 3 | Select-Object FullName, LastWriteTime | Format-Table -AutoSize
+
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
