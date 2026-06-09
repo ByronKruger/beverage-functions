@@ -11,7 +11,7 @@ on:
 env:
   AZURE_FUNCTIONAPP_NAME: 'myFuncApp'
   DOTNET_VERSION: '8.0.x'
-  FUNCTIONS_PROJECT: 'TestFunctionApp/TestFunctionApp.csproj'          # Explicit project folder (or .csproj path)
+  FUNCTIONS_PROJECT: 'TestFunctionApp.csproj'          # Explicit project folder (or .csproj path)
   PUBLISH_DIR: 'publish'                        # Clean, consistent output at workspace root
   AZURE_DEVOPS_ORG: 'krugb'
   AZURE_DEVOPS_PROJ: 'beverages'
