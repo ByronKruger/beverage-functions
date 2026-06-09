@@ -17,8 +17,9 @@ namespace TestFunctionApp.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "api/health")]
             HttpRequest req)
         {
-            var conn = config.GetConnectionString("DefaultConnection");
-            return new OkObjectResult(conn);
+            var connectionString = config.GetConnectionString("DefaultConnection")
+                        ?? config["DefaultConnection"];
+            return new OkObjectResult(connectionString);
         }
     }
 }
