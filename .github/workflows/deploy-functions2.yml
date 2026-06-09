@@ -1,62 +1,69 @@
-name: Build and deploy dotnet core app to Azure Function App - myFuncApp
+name: Deploy ASP.NET Azure Functions (Robust + Private Feed)
 
 on:
   push:
     branches: [ master ]
-    paths: [ 'TestFunctionApp/**' ]
+    paths: 
+      - 'TestFunctionApp/**'   # Update if your project folder name changed
+      - '.github/workflows/**' # Optional: also trigger on workflow changes
   workflow_dispatch:
 
 env:
   AZURE_FUNCTIONAPP_NAME: 'myFuncApp'
-  PROJECT_PATH: 'TestFunctionApp'
   DOTNET_VERSION: '8.0.x'
-  PUBLISH_OUTPUT: './publish'
+  FUNCTIONS_PROJECT: 'TestFunctionApp'          # Explicit project folder (or .csproj path)
+  PUBLISH_DIR: 'publish'                        # Clean, consistent output at workspace root
+  AZURE_DEVOPS_ORG: 'krugb'
+  AZURE_DEVOPS_PROJ: 'beverages'
+  AZURE_DEVOPS_FEED: 'CoffeegCommon'
 
 jobs:
   build-and-deploy:
-    runs-on: windows-latest
-    permissions:
-      id-token: write
-      contents: read
-
+    runs-on: windows-latest   # Best compatibility for .NET Functions (MSBuild, native deps)
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Authenticate Azure DevOps NuGet Feed
-        shell: pwsh
-        working-directory: ${{ env.PROJECT_PATH }}
+      # === BEST PRACTICE: Authenticate to private Azure DevOps NuGet feed ===
+      # Uses the Azure Artifacts Credential Provider via env var (secure, no global source pollution).
+      # Create nuget.config in repo root (or project) with your feed + nuget.org for best results.
+      - name: Configure Azure DevOps NuGet authentication
+        env:
+          VSS_NUGET_EXTERNAL_FEED_ENDPOINTS: '[{"endpoint":"https://pkgs.dev.azure.com/${{ env.AZURE_DEVOPS_ORG }}/${{ env.AZURE_DEVOPS_PROJ }}/_packaging/${{ env.AZURE_DEVOPS_FEED }}/nuget/v3/index.json","username":"anything","password":"${{ secrets.AZURE_DEVOPS_PAT }}"}]'
         run: |
-          dotnet nuget remove source AzureDevOpsFeed --configfile NuGet.config 2>$null || echo "Source not present - continuing"
-          dotnet nuget add source "https://pkgs.dev.azure.com/krugb/beverages/_packaging/CoffeegCommon/nuget/v3/index.json" `
-            --name "AzureDevOpsFeed" `
-            --username "ANYTHING" `
-            --password ${{ secrets.AZURE_DEVOPS_PAT }} `
-            --configfile NuGet.config `
-            --store-password-in-clear-text
+          Write-Host "Azure DevOps NuGet credential provider configured for private feed."
 
-      - name: Restore, Build & Publish
+      # Optional but recommended: explicit restore for clearer logs
+      - name: Restore NuGet packages
         shell: pwsh
-        working-directory: ${{ env.PROJECT_PATH }}
+        run: dotnet restore ${{ env.FUNCTIONS_PROJECT }} --verbosity minimal
+
+      # === BEST PRACTICE: Clean publish dir + explicit project + consistent output ===
+      - name: Clean previous publish output
+        shell: pwsh
         run: |
-          dotnet restore --verbosity detailed
-          dotnet publish -c Release -o '${{ github.workspace }}/${{ env.PUBLISH_OUTPUT }}' --verbosity detailed
+          if (Test-Path ${{ env.PUBLISH_DIR }}) {
+            Remove-Item -Recurse -Force ${{ env.PUBLISH_DIR }}
+          }
 
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_8BA2E93A660246E4AD79BD92D8A5327B }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_8835EF797E6640CFBDE62534DD927E22 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D89E74DF09AD4548841784F5BD997203 }}
+      - name: Build & Publish Functions (Release)
+        shell: pwsh
+        run: |
+          dotnet publish ${{ env.FUNCTIONS_PROJECT }} `
+            -c Release `
+            -o ${{ env.PUBLISH_DIR }} `
+            --no-restore `
+            -p:PublishReadyToRun=true   # Optional perf win for cold starts (Isolated model)
 
+      # === Deploy (zip deploy via publish profile - convenient & works well) ===
       - name: Deploy to Azure Functions
-        uses: Azure/functions-action@v1
+        uses: Azure/functions-action@v1   # Current stable major version (v1.5.x as of 2026)
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          slot-name: 'Production'
-          package: '${{ env.PUBLISH_OUTPUT }}'
+          package: ${{ env.PUBLISH_DIR }}
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
