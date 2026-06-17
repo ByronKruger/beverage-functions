@@ -20,6 +20,9 @@ builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+builder.Services.AddScoped<IAdminBeverageManagementService, AdminBeverageManagementService>();
+builder.Services.AddScoped<IAdminBeverageManagementRepository, AdminBeverageManagementRepository>();
+
 builder.Services.AddScoped<IBeverageCustomisationService, BeverageCustomisationService>();
 builder.Services.AddScoped<IBeverageCustomisationRepository, BeverageCustomisationRepository>();
 
