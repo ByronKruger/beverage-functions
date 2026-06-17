@@ -14,7 +14,7 @@ namespace TestFunctionApp.Functions
     {
         [Function("Health")]
         public async Task<IActionResult> Health(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "api/health")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "health")]
             HttpRequest req)
         {
             var connectionString = config.GetConnectionString("DefaultConnection")

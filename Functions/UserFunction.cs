@@ -25,20 +25,20 @@ namespace TestFunctionApp.Functions
 
         [Function("Register")]
         public async Task<IActionResult> Register(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "api/user/register")]
-            HttpRequest req)//,
-            //[FromBody] RegisterUser user)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user/register")]
+            //HttpRequest req)//,
+            [Microsoft.Azure.Functions.Worker.Http.FromBody] RegisterUser user)
         {
-            RegisterUser? user = null;
-            try
-            {
-                user = await req.ReadFromJsonAsync<RegisterUser>();
-            }
-            catch (Exception ex)
-            {
+            //RegisterUser? user = null;
+            //try
+            //{
+                //user = await req.ReadFromJsonAsync<RegisterUser>();
+            //}
+            //catch (Exception ex)
+            //{
                 // Log the deserialization error
-                return new BadRequestObjectResult($"Invalid JSON: {ex.Message}");
-            }
+                //return new BadRequestObjectResult($"Invalid JSON: {ex.Message}");
+            //}
 
             var result = await Service.CreateUserAsync(user);
 

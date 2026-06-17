@@ -20,6 +20,9 @@ builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+builder.Services.AddScoped<IBeverageCustomisationService, BeverageCustomisationService>();
+builder.Services.AddScoped<IBeverageCustomisationRepository, BeverageCustomisationRepository>();
+
 builder.Services.AddAutoMapper(typeof(BeverageCustomisationProfiles));   // scans for profiles in that assembly
 builder.Services.AddAutoMapper(typeof(UserProfile));   // scans for profiles in that assembly
 
