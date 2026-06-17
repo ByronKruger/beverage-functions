@@ -1,5 +1,6 @@
 ﻿using Coffeeg.Entities;
 using Coffeeg.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,5 @@ namespace TestFunctionApp.Repositories
         {
             return await Context.Ingredients.AnyAsync(i => i.Descr == description);
         }
-    }
-    {
     }
 }
