@@ -14,7 +14,7 @@ namespace TestFunctionApp.Functions
 {
     public class AdminBeverageCustomisationFunction(IAdminBeverageManagementService Service)
     {
-        [Function("AddBeverageType")]
+        [Function("Add-Beverage-Type")]
         
         public async Task<IActionResult> CreateBeverageType(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "beverage-admin/add-beverage-type")] 
@@ -45,7 +45,7 @@ namespace TestFunctionApp.Functions
             //    return BadRequest(new { error = result.ErrorMessage });
         }
 
-        [Function("AddIngredients")]
+        [Function("Add-Ingredients")]
         public async Task<IActionResult> CreateIngredients(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "beverage-admin/add-ingredients")]
             [Microsoft.Azure.Functions.Worker.Http.FromBody] AddIngredients dto)

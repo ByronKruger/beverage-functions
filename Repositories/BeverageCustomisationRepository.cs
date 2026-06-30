@@ -27,7 +27,8 @@ namespace TestFunctionApp.Repositories
         {
             var beverageType = new BeverageType { Id = dto.BeverageTypeId };
             Context.Attach(beverageType); // attach existing beverage type for newly created customisation
-            var user = new User { Id = "946ceec5-a8f5-4142-ae30-7da59f08246a" };
+            //var user = new User { Id = "946ceec5-a8f5-4142-ae30-7da59f08246a" };
+            var user = new User { Id = dto.UserId };
             Context.Attach(user);
 
             var beverageCustomisation = new BeverageCustomisation

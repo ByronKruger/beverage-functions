@@ -14,6 +14,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <None Include="TestFunctionApp.sln" />
     <PackageReference Include="AutoMapper" Version="12.0.0" />
+    <PackageReference Include="Coffeeg.Common" Version="0.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.27" />
     <!-- Application Insights isn't enabled by default. See https://aka.ms/AAt8mw4. -->
     <!-- <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" /> -->
@@ -23,7 +24,12 @@
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
-	<PackageReference Include="Coffeeg.Common" Version="0.0.4" />
+	<!-- Official JWT + Authorization -->
+	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.*" />
+	<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.*" />
+
+	<!-- For token generation (official) -->
+	<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.*" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

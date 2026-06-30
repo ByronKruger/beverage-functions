@@ -3,10 +3,13 @@ using Coffeeg.Helpers.AutoMapperProfiles;
 using Coffeeg.Interfaces.Repositories;
 using Coffeeg.Interfaces.Services;
 using Coffeeg.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TestFunctionApp.Data;
+using TestFunctionApp.Middleware;
 using TestFunctionApp.Repositories;
 
 var builder = FunctionsApplication.CreateBuilder(args);
@@ -14,7 +17,18 @@ var builder = FunctionsApplication.CreateBuilder(args);
 builder.ConfigureFunctionsWebApplication();
 
 builder.Services.AddDataContext<CoffeegDbContext>(builder.Configuration);
+
 builder.Services.AddCoffeegIdentityCore<CoffeegDbContext>();
+
+builder.Services.AddJwtBearerMiddleware(builder.Configuration);
+
+//builder.Services.AddAuthorization();
+
+builder.Services.AddPolicyBasedAuthorization();
+
+// Register middlewares (order matters: auth then authz)
+builder.UseMiddleware<TestFunctionApp.Middleware.AuthenticationMiddleware>();
+builder.UseMiddleware<TestFunctionApp.Middleware.AuthorizationMiddleware>();
 
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
