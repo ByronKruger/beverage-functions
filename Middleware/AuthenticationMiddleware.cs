@@ -9,11 +9,13 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using TestFunctionApp.Extensions;
+using TestFunctionApp.Helpers;
 
 namespace TestFunctionApp.Middleware
 {
@@ -42,6 +44,13 @@ namespace TestFunctionApp.Middleware
             // Only run for HTTP triggers
             if (!context.FunctionDefinition.InputBindings.Values.Any(b => b.Type == "httpTrigger"))
             {
+                await next(context);
+                return;
+            }
+
+            if (IsAnonymous(context))
+            {
+                _logger.LogDebug("Anonymous endpoint - skipping auth");
                 await next(context);
                 return;
             }
@@ -100,6 +109,12 @@ namespace TestFunctionApp.Middleware
                 context.SetHttpResponseStatusCode(HttpStatusCode.InternalServerError);
             }
         }
+        private static bool IsAnonymous(FunctionContext context)
+        {
+            var method = GetTargetMethod(context);  // Reuse the reflection helper you already have
+            return method?.GetCustomAttribute<AllowAnonymousAttribute>() != null ||
+                   method?.DeclaringType?.GetCustomAttribute<AllowAnonymousAttribute>() != null;
+        }
 
         // Feature to carry the principal
         public record JwtPrincipalFeature(ClaimsPrincipal Principal, string Token);
@@ -119,6 +134,15 @@ namespace TestFunctionApp.Middleware
             token = authHeader["Bearer ".Length..].Trim();
             return !string.IsNullOrWhiteSpace(token);
         }
-
+        private static MethodInfo? GetTargetMethod(FunctionContext context)
+        {
+            // Reflection to find the actual Function method (for attribute reading)
+            var entryPoint = context.FunctionDefinition.EntryPoint;
+            var assembly = Assembly.LoadFrom(context.FunctionDefinition.PathToAssembly);
+            var typeName = entryPoint.Substring(0, entryPoint.LastIndexOf('.'));
+            var methodName = entryPoint.Substring(entryPoint.LastIndexOf('.') + 1);
+            var type = assembly.GetType(typeName);
+            return type?.GetMethod(methodName);
+        }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using TestFunctionApp.Helpers;
 
 namespace TestFunctionApp.Functions
 {
@@ -24,6 +25,7 @@ namespace TestFunctionApp.Functions
         //}
 
         [Function("Register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user/register")]
             //HttpRequest req)//,

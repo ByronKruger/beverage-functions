@@ -27,6 +27,13 @@ namespace TestFunctionApp.Middleware
 
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
+            if (IsAnonymous(context))
+            {
+                _logger.LogDebug("Anonymous endpoint - skipping auth");
+                await next(context);
+                return;
+            }
+
             var principalFeature = context.Features.Get<JwtPrincipalFeature>();
             if (principalFeature == null)
             {
@@ -55,7 +62,14 @@ namespace TestFunctionApp.Middleware
             await next(context);
         }
 
-        private static MethodInfo? GetTargetMethod(FunctionContext context)
+        private static bool IsAnonymous(FunctionContext context)
+        {
+            var method = GetTargetMethod(context);  // Reuse the reflection helper you already have
+            return method?.GetCustomAttribute<AllowAnonymousAttribute>() != null ||
+                   method?.DeclaringType?.GetCustomAttribute<AllowAnonymousAttribute>() != null;
+        }
+
+        public static MethodInfo? GetTargetMethod(FunctionContext context)
         {
             // Reflection to find the actual Function method (for attribute reading)
             var entryPoint = context.FunctionDefinition.EntryPoint;
