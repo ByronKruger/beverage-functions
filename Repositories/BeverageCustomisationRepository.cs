@@ -25,16 +25,19 @@ namespace TestFunctionApp.Repositories
         public async Task<Result<BeverageCustomisation>> CreateBeverageCustomisation(
             CreateBeverageCustomisation dto)
         {
-            var beverageType = new BeverageType { Id = dto.BeverageTypeId };
-            Context.Attach(beverageType); // attach existing beverage type for newly created customisation
+            //var beverageType = new BeverageType { Id = dto.BeverageTypeId };
+            //Context.Attach(beverageType); // attach existing beverage type for newly created customisation
             //var user = new User { Id = "946ceec5-a8f5-4142-ae30-7da59f08246a" };
-            var user = new User { Id = dto.UserId };
-            Context.Attach(user);
+            //var user = new User { Id = dto.UserId };
+            //Context.Attach(user);
 
             var beverageCustomisation = new BeverageCustomisation
             {
-                BeverageType = beverageType,
-                User = user
+                //BeverageType = beverageType,
+                BeverageTypeId = dto.BeverageTypeId,
+                //User = user,
+                UserId = dto.UserId,
+                CreateDt = DateTime.Now
             };
 
             //entity.BeverageType = beverageType;

@@ -24,6 +24,17 @@ namespace TestFunctionApp.Functions
         //    return new OkObjectResult("Welcome to Azure Functions!123");
         //}
 
+        [Function("Login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user/login")]
+            [Microsoft.Azure.Functions.Worker.Http.FromBody] LogInUser user)
+        {
+            var result = await Service.CheckUserPasswordAsync(user);
+
+            return result.IsSuccess ? new OkObjectResult(result.Value) : new BadRequestObjectResult(result.ErrorMessage);
+        }
+
         [Function("Register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register(

@@ -62,12 +62,15 @@ namespace TestFunctionApp.Functions
                 return new UnauthorizedResult();
             }
 
-            var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = principal.FindFirst("oid")?.Value
+              ?? principal.FindFirst(ClaimTypes.NameIdentifier)?.Value
+              ?? principal.FindFirst("sub")?.Value;
+
             //return new OkObjectResult(new { message = $"Hello {userId}, you have access." });
 
             //dto.UserId = userId;
             var dto2 = dto with { UserId = userId };
-            var result = await Service.CreateBeverageCustomisation(dto);
+            var result = await Service.CreateBeverageCustomisation(dto2);
             return result.IsSuccess ? new OkObjectResult(result.Value) : new BadRequestObjectResult(result.ErrorMessage);
         }
 
@@ -77,6 +80,18 @@ namespace TestFunctionApp.Functions
             HttpRequestData req)
         {
             var result = await Service.GetBeverageTypesAsync();
+            return new OkObjectResult(result.Value);
+        }
+
+        [Function("Get-User-Customisations")]
+        public async Task<IActionResult> GetUserBeverageCustomisations(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "beverage-customisation/customisations")]
+            HttpRequestData req)
+        {
+            var userId = req.Query.Get("userId");
+
+            var result = await Service.GetUserBeverageCustomisations(userId);
+
             return new OkObjectResult(result.Value);
         }
     }
