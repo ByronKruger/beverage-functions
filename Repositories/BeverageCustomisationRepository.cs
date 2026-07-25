@@ -44,6 +44,9 @@ namespace TestFunctionApp.Repositories
             _logger.LogInformation("Received UserId from DTO: '{UserId}' (Length: {Length})",
                 dto.UserId, dto.UserId?.Length ?? 0);
 
+            _logger.LogWarning("!!! CRITICAL TEST LOG (WARN) - {Time} !!!", DateTime.UtcNow);
+            _logger.LogError("!!! CRITICAL TEST LOG (ERR) - {Time} !!!", DateTime.UtcNow);
+
             var userExists = await Context.Users
                 .AnyAsync(u => u.Id == dto.UserId);
 
