@@ -6,6 +6,7 @@ using Coffeeg.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,6 +36,8 @@ namespace TestFunctionApp.Repositories
             // instead of letting the database throw a low-level FK exception.
             Console.WriteLine($"\n\n**********************");
             Console.WriteLine($"UserId:\t{dto.UserId}");
+            Debug.WriteLine($"\n\n**********************");
+            Debug.WriteLine($"UserId:\t{dto.UserId}");
 
             var userExists = await Context.Users
                 .AnyAsync(u => u.Id == dto.UserId);
