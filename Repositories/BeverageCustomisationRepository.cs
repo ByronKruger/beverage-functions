@@ -31,6 +31,18 @@ namespace TestFunctionApp.Repositories
             //var user = new User { Id = dto.UserId };
             //Context.Attach(user);
 
+            // Optional but recommended: fail fast with a clear domain error
+            // instead of letting the database throw a low-level FK exception.
+            Console.WriteLine($"\n\n**********************");
+            Console.WriteLine($"UserId:\t{dto.UserId}");
+
+            var userExists = await Context.Users
+                .AnyAsync(u => u.Id == dto.UserId);
+
+            if (!userExists)
+                return Result<BeverageCustomisation>.Failure(
+                    $"User '{dto.UserId}' does not exist.");
+
             var beverageCustomisation = new BeverageCustomisation
             {
                 //BeverageType = beverageType,
