@@ -4,6 +4,7 @@ using Coffeeg.Entities;
 using Coffeeg.Helpers;
 using Coffeeg.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,7 +15,7 @@ using TestFunctionApp.Data;
 
 namespace TestFunctionApp.Repositories
 {
-    public class BeverageCustomisationRepository(CoffeegDbContext Context, IMapper Mapper) :
+    public class BeverageCustomisationRepository(CoffeegDbContext Context, IMapper Mapper, ILogger<BeverageCustomisationRepository> _logger) :
         IBeverageCustomisationRepository
     {
         public Task<UserBeverageCustomisationResult> GetUserBeverageCustomisation(
@@ -38,6 +39,10 @@ namespace TestFunctionApp.Repositories
             Console.WriteLine($"UserId:\t{dto.UserId}");
             Debug.WriteLine($"\n\n**********************");
             Debug.WriteLine($"UserId:\t{dto.UserId}");
+
+            _logger.LogInformation("=== CreateBeverageCustomisation START ===");
+            _logger.LogInformation("Received UserId from DTO: '{UserId}' (Length: {Length})",
+                dto.UserId, dto.UserId?.Length ?? 0);
 
             var userExists = await Context.Users
                 .AnyAsync(u => u.Id == dto.UserId);
