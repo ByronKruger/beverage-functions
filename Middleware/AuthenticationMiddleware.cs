@@ -86,7 +86,7 @@ namespace TestFunctionApp.Middleware
                 var httpRequestData = await context.GetHttpRequestDataAsync(); // already have this in improved version
                                                                                // The real HttpContext for your function parameter might be accessible via features in some versions
 
-                await next(context);
+                //await next(context);
 
                 // Store for later use (best practice)
                 context.Features.Set(new JwtPrincipalFeature(principal, token));
@@ -146,3 +146,17 @@ namespace TestFunctionApp.Middleware
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+I 

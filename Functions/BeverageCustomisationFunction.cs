@@ -36,6 +36,7 @@ namespace TestFunctionApp.Functions
             Microsoft.AspNetCore.Http.HttpRequest req,
             FunctionContext context)
         {
+            logger.LogError("=== FUNCTION STARTED === UserId will be extracted next");
             //var principal = req.Identities?.FirstOrDefault(); // ClaimsIdentity collection
             // Or build ClaimsPrincipal
             //if (principal != null && principal.IsAuthenticated)
@@ -58,7 +59,7 @@ namespace TestFunctionApp.Functions
 
             if (principal == null)
             {
-                //logger.LogWarning("No principal found in function");
+                logger.LogWarning("No principal found in function");
                 return new UnauthorizedResult();
             }
 
@@ -66,11 +67,20 @@ namespace TestFunctionApp.Functions
               ?? principal.FindFirst(ClaimTypes.NameIdentifier)?.Value
               ?? principal.FindFirst("sub")?.Value;
 
+            logger.LogError("Extracted UserId = '{UserId}' (Length = {Len})",
+                userId, userId?.Length ?? 0);
+
             //return new OkObjectResult(new { message = $"Hello {userId}, you have access." });
 
             //dto.UserId = userId;
             var dto2 = dto with { UserId = userId };
+
+            logger.LogError("About to call Service.CreateBeverageCustomisation");
+
             var result = await Service.CreateBeverageCustomisation(dto2);
+
+            logger.LogError("Service returned. Success = {Success}", result.IsSuccess);
+
             return result.IsSuccess ? new OkObjectResult(result.Value) : new BadRequestObjectResult(result.ErrorMessage);
         }
 
