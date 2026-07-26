@@ -36,7 +36,11 @@ namespace TestFunctionApp.Functions
             Microsoft.AspNetCore.Http.HttpRequest req,
             FunctionContext context)
         {
-            logger.LogError("=== FUNCTION STARTED === UserId will be extracted next");
+            Console.WriteLine("============================================== CONSOLE: FUNCTION STARTED =====");
+            System.Diagnostics.Trace.WriteLine("==============================================  TRACE: FUNCTION STARTED =====");
+            logger.LogError("==============================================  ILOGGER: FUNCTION STARTED =====");
+
+            logger.LogError("==============================================  FUNCTION STARTED === UserId will be extracted next");
             //var principal = req.Identities?.FirstOrDefault(); // ClaimsIdentity collection
             // Or build ClaimsPrincipal
             //if (principal != null && principal.IsAuthenticated)

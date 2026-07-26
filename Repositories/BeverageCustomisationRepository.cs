@@ -27,6 +27,10 @@ namespace TestFunctionApp.Repositories
         public async Task<Result<BeverageCustomisation>> CreateBeverageCustomisation(
             CreateBeverageCustomisation dto)
         {
+
+            Console.WriteLine($"===== CONSOLE: REPO UserId = {dto.UserId} =====");
+            Console.WriteLine($"===== CONSOLE: ComplexIngredientIds = {string.Join(",", dto.ComplexIngredientAmounts.Select(x => x.ComplexIngredientId))} =====");
+            _logger.LogError("===== ILOGGER: REPO reached =====");
             //var beverageType = new BeverageType { Id = dto.BeverageTypeId };
             //Context.Attach(beverageType); // attach existing beverage type for newly created customisation
             //var user = new User { Id = "946ceec5-a8f5-4142-ae30-7da59f08246a" };
