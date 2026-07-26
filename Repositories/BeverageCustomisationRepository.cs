@@ -68,12 +68,12 @@ namespace TestFunctionApp.Repositories
 
             foreach (var ia in ingredientAmounts)
                 beverageCustomisation.IngredientAmounts.Add(new Coffeeg.Entities.IngredientAmount
-                { IngredientId = ia.Id, Amount = ia.Amount });
+                { IngredientId = ia.IngredientId, Amount = ia.Amount });
 
             var complexIngredientAmounts = dto.ComplexIngredientAmounts;
             foreach (var ca in complexIngredientAmounts)
                 beverageCustomisation.ComplexIngredientAmounts.Add(new Coffeeg.Entities.ComplexIngredientAmount
-                { ComplexIngredientId = ca.Id, Amount = ca.Amount });
+                { ComplexIngredientId = ca.ComplexIngredientId, Amount = ca.Amount });
 
             Context.BeverageCustomisations.Add(beverageCustomisation);
 
