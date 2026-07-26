@@ -75,24 +75,70 @@ namespace TestFunctionApp.Repositories
                 { IngredientId = ia.IngredientId, Amount = ia.Amount });
 
             var complexIngredientAmounts = dto.ComplexIngredientAmounts;
-            foreach (var ca in complexIngredientAmounts)
-                beverageCustomisation.ComplexIngredientAmounts.Add(new Coffeeg.Entities.ComplexIngredientAmount
-                { ComplexIngredientId = ca.ComplexIngredientId, Amount = ca.Amount });
+            //foreach (var ca in complexIngredientAmounts)
+            //    beverageCustomisation.ComplexIngredientAmounts.Add(new Coffeeg.Entities.ComplexIngredientAmount
+            //    { ComplexIngredientId = ca.ComplexIngredientId, Amount = ca.Amount });
 
-            _logger.LogError("=== Values that will be inserted ===");
-
-            foreach (var ca in beverageCustomisation.ComplexIngredientAmounts)
+            foreach (var ca in dto.ComplexIngredientAmounts)
             {
-                _logger.LogError("ComplexIngredientAmount → ComplexIngredientId = {Id}, Amount = {Amount}",
-                    ca.ComplexIngredientId, ca.Amount);
+                beverageCustomisation.ComplexIngredientAmounts.Add(new Coffeeg.Entities.ComplexIngredientAmount
+                {
+                    ComplexIngredientId = ca.ComplexIngredientId,
+                    Amount = ca.Amount
+                });
+            }
+
+            // ===== FORCE THE VALUES INTO THE EXCEPTION =====
+            var ids = beverageCustomisation.ComplexIngredientAmounts
+                .Select(x => x.ComplexIngredientId)
+                .ToList();
+
+            var duplicateCheck = ids
+                .GroupBy(id => id)
+                .Where(g => g.Count() > 1)
+                .Select(g => $"{g.Key} (x{g.Count()})")
+                .ToList();
+
+            if (duplicateCheck.Any())
+            {
+                // This will appear in the Log Stream as part of the exception
+                throw new InvalidOperationException(
+                    $"DUPLICATE ComplexIngredientIds detected before SaveChanges: [{string.Join(", ", ids)}]. " +
+                    $"Duplicates: {string.Join(", ", duplicateCheck)}");
             }
 
             Context.BeverageCustomisations.Add(beverageCustomisation);
 
-            if (await Context.SaveChangesAsync() > 0)
-                return Result<BeverageCustomisation>.Success(beverageCustomisation);
-            else
-                return Result<BeverageCustomisation>.Failure("");
+            try
+            {
+                if (await Context.SaveChangesAsync() > 0)
+                    return Result<BeverageCustomisation>.Success(beverageCustomisation);
+                else
+                    return Result<BeverageCustomisation>.Failure("No rows affected");
+            }
+            catch (DbUpdateException ex)
+            {
+                // Enrich the exception so we can see the values even if the above check was somehow bypassed
+                throw new InvalidOperationException(
+                    $"DbUpdateException. ComplexIngredientIds that were about to be inserted: [{string.Join(", ", ids)}]", ex);
+            }
+
+
+
+            //_logger.LogError("=== Values that will be inserted ===");
+
+            //foreach (var ca in beverageCustomisation.ComplexIngredientAmounts)
+            //{
+            //    _logger.LogError("ComplexIngredientAmount → ComplexIngredientId = {Id}, Amount = {Amount}",
+            //        ca.ComplexIngredientId, ca.Amount);
+            //}
+
+            //Context.BeverageCustomisations.Add(beverageCustomisation);
+
+            //if (await Context.SaveChangesAsync() > 0)
+            //    return Result<BeverageCustomisation>.Success(beverageCustomisation);
+            //else
+            //    return Result<BeverageCustomisation>.Failure("");
 
         }
         //FK_BeverageCustomisation_BeverageType_BeverageTypeId
