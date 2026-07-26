@@ -75,6 +75,14 @@ namespace TestFunctionApp.Repositories
                 beverageCustomisation.ComplexIngredientAmounts.Add(new Coffeeg.Entities.ComplexIngredientAmount
                 { ComplexIngredientId = ca.ComplexIngredientId, Amount = ca.Amount });
 
+            _logger.LogError("=== Values that will be inserted ===");
+
+            foreach (var ca in beverageCustomisation.ComplexIngredientAmounts)
+            {
+                _logger.LogError("ComplexIngredientAmount → ComplexIngredientId = {Id}, Amount = {Amount}",
+                    ca.ComplexIngredientId, ca.Amount);
+            }
+
             Context.BeverageCustomisations.Add(beverageCustomisation);
 
             if (await Context.SaveChangesAsync() > 0)
