@@ -32,7 +32,7 @@ namespace TestFunctionApp.Functions
         [Function("Add-Beverage-Customisation")]
         public async Task<IActionResult> CreateBeverageCustomisation(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "beverage-customisation/add-customisation")]
-            [Microsoft.Azure.Functions.Worker.Http.FromBody] CreateBeverageCustomisation dto,
+            [Microsoft.Azure.Functions.Worker.Http.FromBody] CreateBeverageCustomisationDto dto,
             Microsoft.AspNetCore.Http.HttpRequest req,
             FunctionContext context)
         {
