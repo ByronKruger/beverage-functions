@@ -109,6 +109,23 @@ namespace TestFunctionApp.Repositories
 
             Context.BeverageCustomisations.Add(beverageCustomisation);
 
+            // Deduplicate by ComplexIngredientId (take the last one sent)
+            var uniqueComplex = dto.ComplexIngredientAmounts
+                .GroupBy(x => x.ComplexIngredientId)
+                .Select(g => g.Last())   // or .First(), or throw if you want strictness
+                .ToList();
+
+            beverageCustomisation.ComplexIngredientAmounts.Clear();
+
+            foreach (var ca in uniqueComplex)
+            {
+                beverageCustomisation.ComplexIngredientAmounts.Add(new Coffeeg.Entities.ComplexIngredientAmount
+                {
+                    ComplexIngredientId = ca.ComplexIngredientId,
+                    Amount = ca.Amount
+                });
+            }
+
             try
             {
                 if (await Context.SaveChangesAsync() > 0)
