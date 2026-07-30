@@ -102,7 +102,7 @@ namespace TestFunctionApp.Repositories
                 .Select(x => x.ComplexIngredientId)
                 .ToList();
 
-            _logger.LogInformation("================================== 5 ===");
+            _logger.LogInformation("================================== 5 (v.2) ===");
 
             //// Always throw so we can see the values – remove after diagnosis
             //throw new InvalidOperationException(
