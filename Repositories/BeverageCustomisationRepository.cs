@@ -56,9 +56,13 @@ namespace TestFunctionApp.Repositories
             var userExists = await Context.Users
                 .AnyAsync(u => u.Id == dto.UserId);
 
+            _logger.LogInformation("================================== 1 ===");
+
             if (!userExists)
                 return Result<BeverageCustomisation>.Failure(
                     $"User '{dto.UserId}' does not exist.");
+
+            _logger.LogInformation("================================== 2 ===");
 
             var beverageCustomisation = new BeverageCustomisation
             {
@@ -76,6 +80,8 @@ namespace TestFunctionApp.Repositories
                 beverageCustomisation.IngredientAmounts.Add(new Coffeeg.Entities.IngredientAmount
                 { IngredientId = ia.IngredientId, Amount = ia.Amount });
 
+            _logger.LogInformation("================================== 3 ===");
+
             var complexIngredientAmounts = dto.ComplexIngredientAmounts;
             //foreach (var ca in complexIngredientAmounts)
             //    beverageCustomisation.ComplexIngredientAmounts.Add(new Coffeeg.Entities.ComplexIngredientAmount
@@ -90,9 +96,13 @@ namespace TestFunctionApp.Repositories
                 });
             }
 
+            _logger.LogInformation("================================== 4 ===");
+
             var ids = beverageCustomisation.ComplexIngredientAmounts
-    .Select(x => x.ComplexIngredientId)
-    .ToList();
+                .Select(x => x.ComplexIngredientId)
+                .ToList();
+
+            _logger.LogInformation("================================== 5 ===");
 
             // Always throw so we can see the values – remove after diagnosis
             throw new InvalidOperationException(
