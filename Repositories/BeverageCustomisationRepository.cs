@@ -104,10 +104,10 @@ namespace TestFunctionApp.Repositories
 
             _logger.LogInformation("================================== 5 ===");
 
-            // Always throw so we can see the values – remove after diagnosis
-            throw new InvalidOperationException(
-                $"DEBUG: About to insert ComplexIngredientIds = [{string.Join(", ", ids)}]. " +
-                $"Count = {ids.Count}. Distinct count = {ids.Distinct().Count()}");
+            //// Always throw so we can see the values – remove after diagnosis
+            //throw new InvalidOperationException(
+            //    $"DEBUG: About to insert ComplexIngredientIds = [{string.Join(", ", ids)}]. " +
+            //    $"Count = {ids.Count}. Distinct count = {ids.Distinct().Count()}");
 
             /*
             // ===== FORCE THE VALUES INTO THE EXCEPTION =====
