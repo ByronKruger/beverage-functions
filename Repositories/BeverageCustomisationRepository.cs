@@ -134,12 +134,20 @@ namespace TestFunctionApp.Repositories
             try
             {
                 if (await Context.SaveChangesAsync() > 0)
+                {
+                    _logger.LogInformation("================================== 6.1 ===");
                     return Result<BeverageCustomisation>.Success(beverageCustomisation);
+                }
                 else
+                {
+                    _logger.LogInformation("================================== 6.2 ===");
                     return Result<BeverageCustomisation>.Failure("No rows affected");
+                }
             }
             catch (DbUpdateException ex)
             {
+                _logger.LogInformation("================================== 7 ===");
+
                 // Enrich the exception so we can see the values even if the above check was somehow bypassed
                 throw new InvalidOperationException(
                     $"DbUpdateException. ComplexIngredientIds that were about to be inserted: [{string.Join(", ", ids)}]", ex);
