@@ -27,6 +27,8 @@ namespace TestFunctionApp.Repositories
         public async Task<Result<BeverageCustomisation>> CreateBeverageCustomisation(
             CreateBeverageCustomisationDto dto)
         {
+            // Right at the top of the repository method
+            //throw new Exception("=================================================================== REPO VERSION 2026-07-30-1830 - IF YOU SEE THIS THE NEW CODE IS RUNNING =====");
 
             Console.WriteLine($"===== CONSOLE: REPO UserId = {dto.UserId} =====");
             Console.WriteLine($"===== CONSOLE: ComplexIngredientIds = {string.Join(",", dto.ComplexIngredientAmounts.Select(x => x.ComplexIngredientId))} =====");
@@ -88,6 +90,16 @@ namespace TestFunctionApp.Repositories
                 });
             }
 
+            var ids = beverageCustomisation.ComplexIngredientAmounts
+    .Select(x => x.ComplexIngredientId)
+    .ToList();
+
+            // Always throw so we can see the values – remove after diagnosis
+            throw new InvalidOperationException(
+                $"DEBUG: About to insert ComplexIngredientIds = [{string.Join(", ", ids)}]. " +
+                $"Count = {ids.Count}. Distinct count = {ids.Distinct().Count()}");
+
+            /*
             // ===== FORCE THE VALUES INTO THE EXCEPTION =====
             var ids = beverageCustomisation.ComplexIngredientAmounts
                 .Select(x => x.ComplexIngredientId)
@@ -105,7 +117,7 @@ namespace TestFunctionApp.Repositories
                 throw new InvalidOperationException(
                     $"DUPLICATE ComplexIngredientIds detected before SaveChanges: [{string.Join(", ", ids)}]. " +
                     $"Duplicates: {string.Join(", ", duplicateCheck)}");
-            }
+            }*/
 
             Context.BeverageCustomisations.Add(beverageCustomisation);
 
