@@ -1,14 +1,16 @@
 using Coffeeg.Dtos.User;
+using Coffeeg.Entities;
 using Coffeeg.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using TestFunctionApp.Helpers;
 
 namespace TestFunctionApp.Functions
 {
-    public class UserFunction(IUserManagementService Service)
+    public class UserFunction(IUserManagementService Service, IBeverageCustomisationService BService)
     {
         //private readonly ILogger<UserFunction> _logger;
 
@@ -58,6 +60,21 @@ namespace TestFunctionApp.Functions
             if (!result.IsSuccess) return new BadRequestObjectResult("Could not register");
 
             return new OkObjectResult(result.Value);
+        }
+
+        [Function("Get-Users")]
+        public async Task<ActionResult<List<User>>> GetUsers(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/users")] 
+            HttpRequestData req)
+        {
+
+            var name = req.Query.Get("name");
+
+            var userSearchResult = await BService.GetUserByNames(name);
+
+            return userSearchResult.IsSuccess ? 
+                new OkObjectResult(userSearchResult.Value) : 
+                new NotFoundObjectResult(userSearchResult.ErrorMessage);
         }
     }
 }

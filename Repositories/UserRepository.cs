@@ -20,5 +20,14 @@ namespace TestFunctionApp.Repositories
                 .Where(u => u.UserName == username)
                 .FirstOrDefaultAsync();
         }
+
+        //public async Task<List<User>> GetUserByNames(string name) -- beverage repo copy musy come here (uncomment)
+        //{
+        //    return await Context.Users
+        //        .Where(u => u.UserName.StartsWith(name) ||
+        //            u.FirstName.StartsWith(name) ||
+        //            u.LastName.StartsWith(name))
+        //        .ToListAsync();
+        //}
     }
 }
